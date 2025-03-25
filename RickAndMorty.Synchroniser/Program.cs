@@ -20,19 +20,24 @@ class Program
            }); ;
 
         host.ConfigureServices((context, services) =>
-                  services
-                  .AddHttpClient()
-                  .AddLogging()
-                  .AddHostedService<Synchroniser>()
-                  .AddDbContextFactory<RickAndMortyContext>(opt => opt.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection")))
-                  .AddAutoMapper(typeof(CharacterProfile).Assembly)
-                  .AddSingleton<IRickAndMortyContextFactory, RickAndMortyContextFactory>()
-                  .Scan(scan => scan
-                    .FromApplicationDependencies(assembly => assembly.FullName!.StartsWith("RickAndMorty.Services"))
-                    .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service") && !type.IsAbstract))
-                    .AsImplementedInterfaces()
-                    .WithSingletonLifetime())
-                  );
+        {
+            services
+              .AddLogging()
+              .AddHostedService<Synchroniser>()
+              .AddDbContextFactory<RickAndMortyContext>(opt => opt.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection")))
+              .AddAutoMapper(typeof(CharacterProfile).Assembly)
+              .AddSingleton<IRickAndMortyContextFactory, RickAndMortyContextFactory>()
+              .Scan(scan => scan
+                .FromApplicationDependencies(assembly => assembly.FullName!.StartsWith("RickAndMorty.Services"))
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service") && !type.IsAbstract))
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime())
+              .AddHttpClient<IRickAndMortyApiService, RickAndMortyApiService>((provider, client) =>
+              {
+                  var config = provider.GetRequiredService<IConfiguration>();
+                  client.BaseAddress = new Uri(config.GetValue<string>("ApiBaseAddress") ?? "");
+              });
+        });
 
         var app = host.Build();
 

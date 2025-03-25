@@ -1,17 +1,15 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using RickAndMorty.Contracts;
 using RickAndMorty.DB.Models;
-using RickAndMorty.DTO;
+using RickAndMorty.DTO.Episode;
 
 namespace RickAndMorty.Services;
 
-public class EpisodeService(IRickAndMortyContextFactory contextFactory,
+public sealed class EpisodeService(IRickAndMortyContextFactory contextFactory,
     IRickAndMortyApiService apiService,
-    IMapper mapper,
-     ILogger<EpisodeService> logger) : IEpisodeService
+    IMapper mapper) : IEpisodeService
 {
     public async Task<IReadOnlyList<EpisodeDto>> GetAsync()
     {
@@ -22,7 +20,7 @@ public class EpisodeService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task<EpisodeDto?> Get(int id)
+    public async Task<EpisodeDto?> GetAsync(int id)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Episodes
@@ -32,7 +30,7 @@ public class EpisodeService(IRickAndMortyContextFactory contextFactory,
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IReadOnlyList<EpisodeDto>> Get(string name)
+    public async Task<IReadOnlyList<EpisodeDto>> GetAsync(string name)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Episodes
@@ -42,7 +40,7 @@ public class EpisodeService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task AddAsync(EpisodeDto dto)
+    public async Task AddAsync(NewEpisodeDto dto)
     {
         var context = await contextFactory.CreateContextAsync();
         var entity = mapper.Map<Episode>(dto);
@@ -67,25 +65,10 @@ public class EpisodeService(IRickAndMortyContextFactory contextFactory,
 
     public async Task<int> GetAllFromApiAsync()
     {
-        int currentPage = 0;
-        string url = "api/episode/";
         var context = await contextFactory.CreateContextAsync();
-
-        while (string.IsNullOrEmpty(url) == false)
-        {
-            currentPage++;
-            var response = await apiService.GetAsync<EpisodeDto>(url);
-
-            if (response.Results.Count > 0)
-            {
-                var entities = mapper.Map<List<Episode>>(response.Results);
-                context.Episodes.AddRange(entities);
-            }
-
-            url = string.IsNullOrEmpty(response.Info.Next) ? string.Empty : new Uri(response.Info.Next).PathAndQuery;
-            logger.LogInformation($"Retrieved page {currentPage} of {response.Info.Pages}");
-        }
-
+        var episodes = await apiService.FetchAllEpisodesAsync<NewEpisodeDto>("api/episode/");
+        var newEpisodes = mapper.Map<IEnumerable<Episode>>(episodes);
+        context.Episodes.AddRange(newEpisodes);
         await context.SaveChangesAsync();
         return await CountAsync();
     }

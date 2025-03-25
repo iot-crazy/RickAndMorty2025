@@ -1,11 +1,11 @@
-﻿namespace RickAndMorty.DB.Models;
+﻿namespace RickAndMorty.DTO.Episode;
 
-public class Location
+public class EpisodeDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    public required string Type { get; set; }
-    public required string Dimension { get; set; }
+    public DateTime AirDate { get; set; }
+    public required string Code { get; set; }
     public required string Url { get; set; }
     public DateTime Created { get; set; }
 }

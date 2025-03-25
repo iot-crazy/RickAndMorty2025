@@ -1,14 +1,13 @@
-﻿
-using RickAndMorty.DTO;
+﻿using RickAndMorty.DTO.Character;
 
 namespace RickAndMorty.Contracts
 {
     public interface ICharacterService
     {
-        Task AddAsync(CharacterDto dto);
+        Task AddAsync(NewCharacterDto dto);
         Task DeleteAsync(int id);
-        Task<CharacterDto?> Get(int id);
-        Task<IReadOnlyList<CharacterDto>> Get(string name);
+        Task<CharacterDto?> GetAsync(int id);
+        Task<IReadOnlyList<CharacterDto>> GetAsync(string name);
         Task<IReadOnlyList<CharacterDto>> GetAsync();
         Task<int> CountAsync();
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using RickAndMorty.DB.Models;
-using RickAndMorty.DTO;
+using RickAndMorty.DTO.Character;
 using System.Text.RegularExpressions;
 
 namespace RickAndMorty.Services;
@@ -11,7 +11,7 @@ public class CharacterProfile : Profile
 
     public CharacterProfile()
     {
-        CreateMap<CharacterDto, Character>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+        CreateMap<NewCharacterDto, Character>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
         .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
         .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
         .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
@@ -42,5 +42,8 @@ public class CharacterProfile : Profile
                     CharacterId = src.Id,
                     EpisodeId = int.Parse(Regex.Match(url, pattern).Groups[1].Value)
                 }).ToList()));
+
+
+        CreateMap<Character, CharacterDto>();
     }
 }

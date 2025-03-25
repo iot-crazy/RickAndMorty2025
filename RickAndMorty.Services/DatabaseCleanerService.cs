@@ -2,7 +2,7 @@
 
 namespace RickAndMorty.Services;
 
-public class DatabaseCleanerService(IRickAndMortyContextFactory contextFactory) : IDatabaseCleanerService
+public sealed class DatabaseCleanerService(IRickAndMortyContextFactory contextFactory) : IDatabaseCleanerService
 {
     public async Task CleanAsync()
     {

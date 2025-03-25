@@ -1,8 +1,6 @@
-﻿using RickAndMorty.DTO;
-
-namespace RickAndMorty.Contracts;
+﻿namespace RickAndMorty.Contracts;
 
 public interface IRickAndMortyApiService
 {
-    Task<ApiResponse<T>> GetAsync<T>(string url);
+    Task<IEnumerable<T>> FetchAllEpisodesAsync<T>(string url);
 }

@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using RickAndMorty.Contracts;
 using RickAndMorty.DB.Models;
-using RickAndMorty.DTO;
+using RickAndMorty.DTO.Character;
 
 namespace RickAndMorty.Services;
 
-public class CharacterService(IRickAndMortyContextFactory contextFactory,
+public sealed class CharacterService(IRickAndMortyContextFactory contextFactory,
     IRickAndMortyApiService apiService,
-    IMapper mapper,
-    ILogger<CharacterService> logger) : ICharacterService
+    IMapper mapper) : ICharacterService
 {
     public async Task<IReadOnlyList<CharacterDto>> GetAsync()
     {
@@ -22,7 +20,7 @@ public class CharacterService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task<CharacterDto?> Get(int id)
+    public async Task<CharacterDto?> GetAsync(int id)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Characters
@@ -32,7 +30,7 @@ public class CharacterService(IRickAndMortyContextFactory contextFactory,
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IReadOnlyList<CharacterDto>> Get(string name)
+    public async Task<IReadOnlyList<CharacterDto>> GetAsync(string name)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Characters
@@ -42,7 +40,7 @@ public class CharacterService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task AddAsync(CharacterDto dto)
+    public async Task AddAsync(NewCharacterDto dto)
     {
         var context = await contextFactory.CreateContextAsync();
         var entity = mapper.Map<Character>(dto);
@@ -67,36 +65,11 @@ public class CharacterService(IRickAndMortyContextFactory contextFactory,
 
     public async Task<int> GetAllFromApiAsync()
     {
-        try
-        {
-            int currentPage = 0;
-            string url = "api/character/?status=alive";
-            var context = await contextFactory.CreateContextAsync();
-
-            while (string.IsNullOrEmpty(url) == false)
-            {
-                currentPage++;
-                var response = await apiService.GetAsync<CharacterDto>(url);
-
-                if (response.Results.Count > 0)
-                {
-                    var entities = mapper.Map<List<Character>>(response.Results);
-                    context.Characters.AddRange(entities);
-                }
-
-                url = string.IsNullOrEmpty(response.Info.Next) ? string.Empty : new Uri(response.Info.Next).PathAndQuery;
-                logger.LogInformation($"Retrieved page {currentPage} of {response.Info.Pages}");
-            }
-
-            await context.SaveChangesAsync();
-
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-
+        var context = await contextFactory.CreateContextAsync();
+        var characters = await apiService.FetchAllEpisodesAsync<NewCharacterDto>("api/character/?status=alive");
+        var newCharacters = mapper.Map<IEnumerable<Character>>(characters);
+        context.Characters.AddRange(newCharacters);
+        await context.SaveChangesAsync();
         return await CountAsync();
-
     }
 }

@@ -1,32 +1,44 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using RickAndMorty.Contracts;
 using RickAndMorty.DTO;
 using System.Text.Json;
 
 namespace RickAndMorty.Services;
 
-public class RickAndMortyApiService(ILogger<RickAndMortyApiService> logger, IHttpClientFactory clientFactory,
-    IConfiguration config) : IRickAndMortyApiService
+public sealed class RickAndMortyApiService(ILogger<RickAndMortyApiService> logger,
+    HttpClient httpClient) : IRickAndMortyApiService
 {
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task<ApiResponse<T>> GetAsync<T>(string url)
+    public async Task<IEnumerable<T>> FetchAllEpisodesAsync<T>(string url)
     {
-        string? baseUrl = config.GetValue<string>("ApiBaseAddress");
+        var allRecords = new List<T>();
+        int currentPage = 0;
 
-        if (string.IsNullOrEmpty(baseUrl))
+        while (!string.IsNullOrEmpty(url))
         {
-            throw new Exception(nameof(baseUrl));
+            currentPage++;
+            var response = await GetAsync<T>(url);
+
+            if (response.Results.Count > 0)
+            {
+                allRecords.AddRange(response.Results);
+            }
+
+            url = string.IsNullOrEmpty(response.Info.Next) ? string.Empty : new Uri(response.Info.Next).PathAndQuery;
+            logger.LogInformation($"Retrieved page {currentPage} of {response.Info.Pages}");
         }
 
-        var client = clientFactory.CreateClient();
-        client.BaseAddress = new Uri(baseUrl);
+        return allRecords;
+    }
+
+    private async Task<ApiResponse<T>> GetAsync<T>(string url)
+    {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await client.SendAsync(request);
+        var response = await httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
             return await Read<T>(response);

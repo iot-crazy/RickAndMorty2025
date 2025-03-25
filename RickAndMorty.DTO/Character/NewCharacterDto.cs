@@ -1,6 +1,6 @@
-﻿namespace RickAndMorty.DTO;
+﻿namespace RickAndMorty.DTO.Character;
 
-public class CharacterDto
+public class NewCharacterDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
@@ -8,9 +8,9 @@ public class CharacterDto
     public required string Type { get; set; }
     public required string Gender { get; set; }
 
-    public LocationLinkDto Origin { get; set; } = default!;
+    public NewLocationLinkDto Origin { get; set; } = default!;
 
-    public LocationLinkDto Location { get; set; } = default!;
+    public NewLocationLinkDto Location { get; set; } = default!;
     public required string Image { get; set; }
     public required string Url { get; set; }
     public DateTime Created { get; set; }

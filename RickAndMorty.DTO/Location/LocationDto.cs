@@ -1,4 +1,4 @@
-﻿namespace RickAndMorty.DTO;
+﻿namespace RickAndMorty.DTO.Location;
 
 public class LocationDto
 {

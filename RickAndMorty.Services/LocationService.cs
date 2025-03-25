@@ -1,17 +1,15 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using RickAndMorty.Contracts;
 using RickAndMorty.DB.Models;
-using RickAndMorty.DTO;
+using RickAndMorty.DTO.Location;
 
 namespace RickAndMorty.Services;
 
-public class LocationService(IRickAndMortyContextFactory contextFactory,
+public sealed class LocationService(IRickAndMortyContextFactory contextFactory,
     IRickAndMortyApiService apiService,
-    IMapper mapper,
-    ILogger<LocationService> logger) : ILocationService
+    IMapper mapper) : ILocationService
 {
     public async Task<IReadOnlyList<LocationDto>> GetAsync()
     {
@@ -22,7 +20,7 @@ public class LocationService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task<LocationDto?> Get(int id)
+    public async Task<LocationDto?> GetAsync(int id)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Locations
@@ -32,7 +30,7 @@ public class LocationService(IRickAndMortyContextFactory contextFactory,
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IReadOnlyList<LocationDto>> Get(string name)
+    public async Task<IReadOnlyList<LocationDto>> GetAsync(string name)
     {
         var context = await contextFactory.CreateContextAsync();
         return await context.Locations
@@ -42,7 +40,7 @@ public class LocationService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task AddAsync(LocationDto dto)
+    public async Task AddAsync(NewLocationDto dto)
     {
         var context = await contextFactory.CreateContextAsync();
         var entity = mapper.Map<Location>(dto);
@@ -67,25 +65,10 @@ public class LocationService(IRickAndMortyContextFactory contextFactory,
 
     public async Task<int> GetAllFromApiAsync()
     {
-        int currentPage = 0;
-        string url = "api/location/";
         var context = await contextFactory.CreateContextAsync();
-
-        while (string.IsNullOrEmpty(url) == false)
-        {
-            currentPage++;
-            var response = await apiService.GetAsync<LocationDto>(url);
-
-            if (response.Results.Count > 0)
-            {
-                var entities = mapper.Map<List<Location>>(response.Results);
-                context.Locations.AddRange(entities);
-            }
-
-            url = string.IsNullOrEmpty(response.Info.Next) ? string.Empty : new Uri(response.Info.Next).PathAndQuery;
-            logger.LogInformation($"Retrieved page {currentPage} of {response.Info.Pages}");
-        }
-
+        var locations = await apiService.FetchAllEpisodesAsync<NewLocationDto>("api/location/");
+        var newLocations = mapper.Map<IEnumerable<Location>>(locations);
+        context.Locations.AddRange(newLocations);
         await context.SaveChangesAsync();
         return await CountAsync();
     }

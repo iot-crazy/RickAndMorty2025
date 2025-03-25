@@ -1,6 +1,6 @@
-﻿namespace RickAndMorty.DB.Models;
+﻿namespace RickAndMorty.DTO.Location;
 
-public class Location
+public class NewLocationDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

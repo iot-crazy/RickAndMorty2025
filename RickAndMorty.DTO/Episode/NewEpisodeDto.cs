@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RickAndMorty.DTO;
+namespace RickAndMorty.DTO.Episode;
 
-public class EpisodeDto
+public class NewEpisodeDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
