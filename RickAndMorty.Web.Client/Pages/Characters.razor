@@ -1,0 +1,41 @@
+﻿@page "/characters"
+@using RickAndMorty.DTO.Character
+@using RickAndMorty.Contracts
+@inject ICharacterDataProvider CharacterProvider
+
+
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5">Characters</MudText>
+
+    <MudTable Items="AllCharacters" T="CharacterDto" Sortable="True">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Gender)">Gender</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id" >@context.Id</MudTd>
+            <MudTd DataLabel="Name" >@context.Name</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Gender">@context.Gender</MudTd>
+            <MudTd DataLabel="Type">@context.Type</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+</MudPaper>
+
+@code {
+
+    private List<CharacterDto> AllCharacters = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllCharacters = (await CharacterProvider.GetAsync()).ToList();
+        StateHasChanged();
+    }
+}

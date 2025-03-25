@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using RickAndMorty.Contracts;
 using RickAndMorty.DB;
 using RickAndMorty.Services;
 using RickAndMorty.Web.Components;
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -21,6 +24,10 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 
+builder.Services
+    .AddScoped<ICharacterDataProvider, ServerCharacterDataProvider>()
+    .AddSingleton<IRickAndMortyContextFactory, RickAndMortyContextFactory>();
+
 builder.Services.AddDbContextFactory<RickAndMortyContext>((provider, options) =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -29,6 +36,13 @@ builder.Services.AddDbContextFactory<RickAndMortyContext>((provider, options) =>
 
 builder.Services.AddAutoMapper(typeof(CharacterProfile).Assembly);
 
+// To access our own API
+
+builder.Services.AddHttpClient<IRickAndMortyApiService, RickAndMortyApiService>((provider, client) =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(config.GetValue<string>("ApiBaseAddress") ?? "");
+});
 
 var app = builder.Build();
 
@@ -44,8 +58,9 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
+app.MapControllers();
 
 app.UseAntiforgery();
 
