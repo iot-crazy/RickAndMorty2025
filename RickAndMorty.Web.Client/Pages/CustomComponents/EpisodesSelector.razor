@@ -1,0 +1,24 @@
+﻿@using RickAndMorty.DTO.Episode;
+@inherits EpisodesSelectorBase;
+
+<MudSelect T="EpisodeDto"
+           MultiSelection="true"
+           Variant="Variant.Outlined"
+           SelectedValuesChanged="OnSelectedEpisodesChanged"
+           Placeholder="@Placeholder"
+           Dense="false"
+           Label="@Label"
+           ToStringFunc="@FormatEpisode">
+    @foreach (var episode in Episodes)
+    {
+        <MudSelectItem T="EpisodeDto" Value="episode">@episode.Code - @episode.Name</MudSelectItem>
+    }
+</MudSelect>
+
+
+@*  SelectedValues="SelectedEpisodes"
+
+
+SelectedValuesChanged="@((List<EpisodeDto> values) => OnSelectedEpisodesChanged(values))" 
+    
+*@

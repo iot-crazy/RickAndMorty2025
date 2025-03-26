@@ -4,7 +4,7 @@ namespace RickAndMorty.Contracts;
 
 public interface ILocationService
 {
-    Task AddAsync(NewLocationDto dto);
+    Task AddAsync(NewApiLocationDto dto);
     Task<int> CountAsync();
     Task DeleteAsync(int id);
     Task<LocationDto?> GetAsync(int id);

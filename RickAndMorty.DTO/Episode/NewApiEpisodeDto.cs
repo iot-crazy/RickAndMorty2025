@@ -2,7 +2,7 @@
 
 namespace RickAndMorty.DTO.Episode;
 
-public class NewEpisodeDto
+public class NewApiEpisodeDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

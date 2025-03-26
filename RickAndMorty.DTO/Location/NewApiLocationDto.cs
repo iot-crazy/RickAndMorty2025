@@ -1,6 +1,6 @@
 ﻿namespace RickAndMorty.DTO.Location;
 
-public class NewLocationDto
+public class NewApiLocationDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

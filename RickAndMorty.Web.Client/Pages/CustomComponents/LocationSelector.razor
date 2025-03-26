@@ -1,0 +1,19 @@
+﻿@using RickAndMorty.DTO.Location;
+@inherits LocationSelectorBase;
+
+            <MudSelect T="LocationDto"
+                       MultiSelection="false"
+                       Variant="Variant.Outlined"
+                     
+                       ValueChanged="OnSelectedLocationChanged"
+                       Placeholder="@Placeholder"
+            Dense="false"
+            Label="@Label">
+                @foreach (var location in Locations)
+                {
+                    <MudSelectItem T="LocationDto" Value="location">@location.Name - @location.Dimension</MudSelectItem>
+                }
+            </MudSelect>
+
+
+              @* Value="@SelectedLocation" *@

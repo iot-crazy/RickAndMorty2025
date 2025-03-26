@@ -40,7 +40,7 @@ public sealed class EpisodeService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task AddAsync(NewEpisodeDto dto)
+    public async Task AddAsync(NewApiEpisodeDto dto)
     {
         var context = await contextFactory.CreateContextAsync();
         var entity = mapper.Map<Episode>(dto);
@@ -66,7 +66,7 @@ public sealed class EpisodeService(IRickAndMortyContextFactory contextFactory,
     public async Task<int> GetAllFromApiAsync()
     {
         var context = await contextFactory.CreateContextAsync();
-        var episodes = await apiService.FetchAllEpisodesAsync<NewEpisodeDto>("api/episode/");
+        var episodes = await apiService.FetchAllEpisodesAsync<NewApiEpisodeDto>("api/episode/");
         var newEpisodes = mapper.Map<IEnumerable<Episode>>(episodes);
         context.Episodes.AddRange(newEpisodes);
         await context.SaveChangesAsync();

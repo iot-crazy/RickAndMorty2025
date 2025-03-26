@@ -1,59 +1,112 @@
 ﻿@page "/"
+@inherits HomeBase
 
 <PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 9 Template!</MudText>
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+@if (AllCharacters.Count == 0)
+{
+    @if (ImportInProgress)
+    {
+        <MudPaper Class="pa-2 d-flex align-center justify-start" Elevation="1" Style="background-color: #e3f2fd;">
+            <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Color="Color.Info" Class="me-2" />
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
-</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Info">
+                Import in progress — data is being fetched from the Rick and Morty API. Please wait...
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Class="pa-2 d-flex align-center justify-between rounded" Elevation="1"
+                  Style="background-color: var(--mud-palette-background); border: 2px solid var(--mud-palette-error);">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Error" Class="me-2" />
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 9</MudText>
-<br />
+                <MudText Typo="Typo.subtitle2" Class="mud-text">
+                    Data not found — you may need to import it from the Rick and Morty API.
+                </MudText>
+            </div>
 
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 9 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+            <div class="ms-6">
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small" OnClick="@ImportData">
+                    Import Now
+                </MudButton>
+            </div>
+        </MudPaper>
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+
+    }
+}
+else
+{
+<MudPaper Class="pa-2 d-flex align-center justify-start" Elevation="1" Style="background-color: #d4edda;">
+    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="me-2" />
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Success">
+        Import complete — all data has been successfully loaded from the Rick and Morty API.
+    </MudText>
+</MudPaper>
+}
+
+
+<MudPaper Class="pa-6 ma-6 d-flex flex-column align-center justify-center" Elevation="2">
+    <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+    
+    <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+        Welcome to the Rick and Morty Code Challenge & Tech Demo
+    </MudText>
+
+    <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-4">
+        This project showcases modern .NET technologies using live data from the Rick and Morty universe.
+        <br/>
+        Explore Blazor, EF Core, MudBlazor, and more — all in one interdimensional app!
+    </MudText>
+
+<MudGrid Justify="Justify.Center" AlignItems="Center">
+                        <MudItem xs="1"></MudItem>
+
+                        <MudItem xs="2">
+                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                                <MudCardContent Style="text-align: center;">
+                                    <MudImage Src="assets/img/NET_Core_Logo.svg.png"  Height="75" />
+                                    <MudText>.Net Core 9</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                         <MudItem xs="2">
+                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                                <MudCardContent Style="text-align: center;">
+                                    <MudImage Src="assets/img/mudblazorlogo.png" Height="75" />
+                                    <MudText>MudBlazor</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                            <MudItem xs="2">
+                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                                <MudCardContent Style="text-align: center;">
+                                    <MudImage Src="assets/img/efcore.png" Height="75" />
+                                    <MudText>Entity Framework 9</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                        <MudItem xs="2">
+                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                                <MudCardContent Style="text-align: center;">
+                                    <MudImage Src="assets/img/onion.png" Height="75" />
+                                    <MudText>Onion Architecture</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                        <MudItem xs="1"></MudItem>
+                    </MudGrid>
+
+    <MudText Typo="Typo.caption" Align="Align.Center">
+        See the README.md in the solution root folder.
+    </MudText>
+</MudPaper>
+

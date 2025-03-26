@@ -86,7 +86,7 @@ public class EpisodeServiceTests
         // Arrange
         var airDate = new DateTime(2013, 12, 2);
         var createdDate = new DateTime(2020, 12, 2);
-        var dto = new NewEpisodeDto
+        var dto = new NewApiEpisodeDto
         {
             Id = 2,
             Name = "Episode 2",
@@ -122,7 +122,7 @@ public class EpisodeServiceTests
         // Arrange
         var airDate = new DateTime(2013, 12, 2);
         var createdDate = new DateTime(2020, 12, 2);
-        var fakeDtos = new List<NewEpisodeDto>
+        var fakeDtos = new List<NewApiEpisodeDto>
     {
         new()
         {
@@ -136,7 +136,7 @@ public class EpisodeServiceTests
     };
 
         var apiMock = new Mock<IRickAndMortyApiService>();
-        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewEpisodeDto>("api/episode/"))
+        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewApiEpisodeDto>("api/episode/"))
                .ReturnsAsync(fakeDtos);
 
         var factory = GetFactoryWithSeedData([]);

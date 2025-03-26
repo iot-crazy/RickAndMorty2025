@@ -17,8 +17,8 @@ public class RickAndMortyApiServiceTests
     public async Task GetAsync_ShouldReturnCorrectData()
     {
         // Arrange
-        var expectedPage1 = JsonHelper.GetJson<ApiResponse<NewEpisodeDto>>("TestDataFiles/EpisodesPage1.json");
-        var expectedPage2 = JsonHelper.GetJson<ApiResponse<NewEpisodeDto>>("TestDataFiles/EpisodesPage2.json");
+        var expectedPage1 = JsonHelper.GetJson<ApiResponse<NewApiEpisodeDto>>("TestDataFiles/EpisodesPage1.json");
+        var expectedPage2 = JsonHelper.GetJson<ApiResponse<NewApiEpisodeDto>>("TestDataFiles/EpisodesPage2.json");
 
         //  var content = new StringContent(expected.Json, Encoding.UTF8, "application/json");
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -58,7 +58,7 @@ public class RickAndMortyApiServiceTests
         var service = new RickAndMortyApiService(loggerMock.Object, httpClient);
 
         // Act
-        var result = await service.FetchAllEpisodesAsync<NewEpisodeDto>("some-endpoint");
+        var result = await service.FetchAllEpisodesAsync<NewApiEpisodeDto>("some-endpoint");
 
         // Assert
         var expectedResults = expectedPage1.ObjectContent.Results.Concat(expectedPage2.ObjectContent.Results).ToList();

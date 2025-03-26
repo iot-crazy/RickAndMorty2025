@@ -40,7 +40,7 @@ public sealed class LocationService(IRickAndMortyContextFactory contextFactory,
             .ToListAsync();
     }
 
-    public async Task AddAsync(NewLocationDto dto)
+    public async Task AddAsync(NewApiLocationDto dto)
     {
         var context = await contextFactory.CreateContextAsync();
         var entity = mapper.Map<Location>(dto);
@@ -66,7 +66,7 @@ public sealed class LocationService(IRickAndMortyContextFactory contextFactory,
     public async Task<int> GetAllFromApiAsync()
     {
         var context = await contextFactory.CreateContextAsync();
-        var locations = await apiService.FetchAllEpisodesAsync<NewLocationDto>("api/location/");
+        var locations = await apiService.FetchAllEpisodesAsync<NewApiLocationDto>("api/location/");
         var newLocations = mapper.Map<IEnumerable<Location>>(locations);
         context.Locations.AddRange(newLocations);
         await context.SaveChangesAsync();

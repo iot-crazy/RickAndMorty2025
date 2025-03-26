@@ -4,7 +4,7 @@ using RickAndMorty.DB;
 
 namespace RickAndMorty.Services;
 
-public class RickAndMortyContextFactory(IDbContextFactory<RickAndMortyContext> contextFactory) : IRickAndMortyContextFactory
+public sealed class RickAndMortyContextFactory(IDbContextFactory<RickAndMortyContext> contextFactory) : IRickAndMortyContextFactory
 {
     public async Task<RickAndMortyContext> CreateContextAsync()
     {

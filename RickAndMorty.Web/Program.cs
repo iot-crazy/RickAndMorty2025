@@ -3,6 +3,7 @@ using MudBlazor.Services;
 using RickAndMorty.Contracts;
 using RickAndMorty.DB;
 using RickAndMorty.Services;
+using RickAndMorty.Web;
 using RickAndMorty.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,32 +25,78 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 
-builder.Services
-    .AddScoped<ICharacterDataProvider, ServerCharacterDataProvider>()
-    .AddSingleton<IRickAndMortyContextFactory, RickAndMortyContextFactory>();
+builder.Services.Scan(scan => scan
+        .FromApplicationDependencies(assembly => assembly.FullName!.StartsWith("RickAndMorty.Services"))
+        .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Provider") && !type.IsAbstract))
+        .AsImplementedInterfaces()
+        .WithScopedLifetime()
+);
+
+
+// ** Register the database context and factory ** //
+builder.Services.AddScoped<IRickAndMortyContextFactory, RickAndMortyContextFactory>()
+    .AddScoped<ICacheInvalidator, CacheInvalidator>();
 
 builder.Services.AddDbContextFactory<RickAndMortyContext>((provider, options) =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
 });
 
 builder.Services.AddAutoMapper(typeof(CharacterProfile).Assembly);
 
-// To access our own API
-
+// To access our own API from WASM
 builder.Services.AddHttpClient<IRickAndMortyApiService, RickAndMortyApiService>((provider, client) =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
     client.BaseAddress = new Uri(config.GetValue<string>("ApiBaseAddress") ?? "");
 });
 
+int cacheMinutes = builder.Configuration.GetValue<int>("CacheMinutes");
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(cacheMinutes)));
+});
+
+
+builder.Services.AddHttpClient("ServerAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7036/"); // or use builder.HostEnvironment.BaseAddress
+});
+builder.Services.AddScoped(sp =>
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerAPI"));
+
+
+// ** Add swagger **
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+// ** Ensure the database is created and the schema is migrated ** //
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<RickAndMortyContext>>();
+        await using var context = await factory.CreateDbContextAsync();
+        await context.Database.EnsureCreatedAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Migration failed:");
+        Console.WriteLine(ex);
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -61,6 +108,7 @@ else
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseOutputCache();
 
 app.UseAntiforgery();
 

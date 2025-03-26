@@ -1,19 +1,30 @@
-﻿namespace RickAndMorty.DTO.Character;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RickAndMorty.DTO.Character;
 
 public class NewCharacterDto
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Status { get; set; }
-    public required string Type { get; set; }
-    public required string Gender { get; set; }
+    [Required]
+    public string Name { get; set; } = string.Empty;
 
-    public NewLocationLinkDto Origin { get; set; } = default!;
+    [Required]
+    public string Status { get; set; } = string.Empty;
 
-    public NewLocationLinkDto Location { get; set; } = default!;
-    public required string Image { get; set; }
-    public required string Url { get; set; }
+    [Required]
+    public string Type { get; set; } = string.Empty;
+
+    [Required]
+    public string Gender { get; set; } = string.Empty;
+
+    public int OriginLocationId { get; set; } = default!;
+
+    public int LocationId { get; set; } = default!;
+
+    public string Image { get; set; } = string.Empty;
+
+    public string Url { get; set; } = string.Empty;
+
     public DateTime Created { get; set; }
 
-    public List<string> Episode { get; set; } = [];
+    public List<int> Episodes { get; set; } = [];
 }

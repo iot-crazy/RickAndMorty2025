@@ -1,27 +1,62 @@
 ﻿@page "/characters"
 @using RickAndMorty.DTO.Character
 @using RickAndMorty.Contracts
-@inject ICharacterDataProvider CharacterProvider
-
+@using RickAndMorty.Web.Client.Pages.CustomComponents
+@inherits CharactersBase;
 
 
 <MudPaper Class="pa-4">
-    <MudText Typo="Typo.h5">Characters</MudText>
 
-    <MudTable Items="AllCharacters" T="CharacterDto" Sortable="True">
+    <MudButtonGroup class="d-flex justify-end">
+       
+    </MudButtonGroup>
+
+    <MudTable Items="AllCharacters" T="CharacterDto" Sortable="True" Filter="new Func<CharacterDto,bool>(FilterFunc)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Characters</MudText>
+            <MudSpacer /> <MudButton OnClick="AddNewDialogOpen">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Small" />
+            Add New Character
+        </MudButton>
+
+            <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
+            <MudTh></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Gender)">Gender</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Origin.Name)">Origin</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<CharacterDto, object>(x => x.Location)">Last known location</MudTableSortLabel></MudTh>
+            <MudTh>Episodes</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Id" >@context.Id</MudTd>
-            <MudTd DataLabel="Name" >@context.Name</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Id">@if (string.IsNullOrEmpty(context.Image) == false)
+                {
+                    <MudImage Src="@context.Image" Width="40"/>
+                }
+            </MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Status">@context.Status</MudTd>
             <MudTd DataLabel="Gender">@context.Gender</MudTd>
             <MudTd DataLabel="Type">@context.Type</MudTd>
+            <MudTd DataLabel="Origin">@context.Origin?.Name</MudTd>
+            <MudTd DataLabel="Location">@context.Location?.Name</MudTd>
+            <MudTd DataLabel="Episodes">
+                @if (context.Episodes.Count > 0)
+                {
+                    <MudButton Variant="Variant.Outlined" OnClick="@(() => OpenEpisodes(context.Id))">
+                        @context.Episodes.Count  - Click to view
+                    </MudButton>
+                }
+                else
+                {
+                    <MudText>None Found</MudText>
+                }
+            </MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
@@ -29,13 +64,41 @@
     </MudTable>
 </MudPaper>
 
-@code {
 
-    private List<CharacterDto> AllCharacters = [];
+<MudDialog @ref="AddNewCharacterDialog" Options="DialogOptions">
+    <TitleContent><MudText Typo="Typo.h4" GutterBottom="true">Add New Character</MudText></TitleContent>
+    <DialogContent>
+        <MudPaper>
+            <MudForm @ref="AddNewCharacterForm" Model="NewCharacter" Validation="true">
+                <MudTextField @bind-Value="NewCharacter.Name" For="@(() => NewCharacter.Name)" Label="Name" Variant="Variant.Text" />
+                <MudTextField @bind-Value="NewCharacter.Status" For="@(() => NewCharacter.Status)" Label="Status" Variant="Variant.Text" />
+                <MudTextField @bind-Value="NewCharacter.Type" For="@(() => NewCharacter.Type)" Label="Type" Variant="Variant.Text" />
+                <MudTextField @bind-Value="NewCharacter.Gender" For="@(() => NewCharacter.Gender)" Label="Gender" Variant="Variant.Text" />
+                <MudTextField @bind-Value="NewCharacter.Image" For="@(() => NewCharacter.Image)" Label="Image" Variant="Variant.Text" />
+                <MudTextField @bind-Value="NewCharacter.Url" For="@(() => NewCharacter.Url)" Label="Url" Variant="Variant.Text" />
+                <LocationSelector SelectedLocationChanged="OnSelectedLocationChanged" Label="Last known Location" />
+                <LocationSelector SelectedLocationChanged="OnSelectedOriginChanged" Label="Origin" />
+                <EpisodesSelector SelectedEpisodesChanged="OnEpisodesChanged" Label="Episodes" />
+            </MudForm>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" OnClick="AddnewDialogClose">Cancel</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="SubmitNewCharacter">Submit</MudButton>
+    </DialogActions>
 
-    protected override async Task OnInitializedAsync()
-    {
-        AllCharacters = (await CharacterProvider.GetAsync()).ToList();
-        StateHasChanged();
-    }
-}
+</MudDialog>
+
+<MudDialog @ref="EpisodesDialog" Options="EpisodeDialogOptions">
+    <TitleContent><MudText Typo="Typo.h4" GutterBottom="true">Known episodes for @SelectedCharacterName</MudText></TitleContent>
+    <DialogContent>
+        <div style="max-height:70vh; overflow:auto;">
+        <MudGrid>
+            @foreach (var episode in EpisodesForSelectedCharacter)
+            {
+                <MudItem xs="12">@episode.Code - @episode.Name</MudItem>
+            }
+        </MudGrid>
+        </div>
+    </DialogContent>
+</MudDialog>

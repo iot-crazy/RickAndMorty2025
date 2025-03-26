@@ -119,7 +119,7 @@ public class LocationServiceTests
     public async Task AddAsync_ShouldAddLocation_WithAllProperties()
     {
         var created = new DateTime(2020, 12, 2);
-        var dto = new NewLocationDto
+        var dto = new NewApiLocationDto
         {
             Id = 5,
             Name = "Blips and Chitz",
@@ -187,7 +187,7 @@ public class LocationServiceTests
     public async Task GetAllFromApiAsync_ShouldFetchFromApi_AndSaveAllProperties()
     {
         var created = new DateTime(2020, 12, 2);
-        var fakeDtos = new List<NewLocationDto>
+        var fakeDtos = new List<NewApiLocationDto>
     {
         new()
         {
@@ -201,7 +201,7 @@ public class LocationServiceTests
     };
 
         var apiMock = new Mock<IRickAndMortyApiService>();
-        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewLocationDto>("api/location/"))
+        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewApiLocationDto>("api/location/"))
                .ReturnsAsync(fakeDtos);
 
         var factory = GetFactoryWithSeedData([]);

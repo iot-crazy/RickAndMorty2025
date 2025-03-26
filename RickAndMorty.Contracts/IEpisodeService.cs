@@ -4,7 +4,7 @@ namespace RickAndMorty.Contracts;
 
 public interface IEpisodeService
 {
-    Task AddAsync(NewEpisodeDto dto);
+    Task AddAsync(NewApiEpisodeDto dto);
     Task<int> CountAsync();
     Task DeleteAsync(int id);
     Task<EpisodeDto?> GetAsync(int id);

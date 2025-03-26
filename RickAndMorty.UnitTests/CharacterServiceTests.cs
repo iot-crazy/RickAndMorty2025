@@ -21,6 +21,7 @@ public class CharacterServiceTests
         {
             cfg.AddProfile<CharacterProfile>();
             cfg.AddProfile<LocationProfile>();
+            cfg.AddProfile<EpisodeProfile>();
         });
 
         _mapper = config.CreateMapper();
@@ -80,7 +81,8 @@ public class CharacterServiceTests
 
         var factory = GetFactoryWithSeedData(characters);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         var result = await service.GetAsync();
 
@@ -135,7 +137,8 @@ public class CharacterServiceTests
 
         var factory = GetFactoryWithSeedData(characters);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         var result = await service.GetAsync(2);
 
@@ -151,87 +154,159 @@ public class CharacterServiceTests
     }
 
     [Fact]
-    public async Task Get_ByName_ShouldReturnCharacters_WithAllProperties()
+    public async Task Get_WithVariousFilters_ShouldReturnExpectedCharacters()
     {
         var created = new DateTime(2020, 12, 2);
-        var characters = new List<Character>
+
+        // Shared location instances
+        var locationEarthC137 = new Location
         {
-            new()
-            {
-                Id = 3,
-                Name = "Summer Smith",
-                Status = "Alive",
-                Type = "Human",
-                Gender = "Female",
-                               Origin = new Location
-                        {
-                            Id = 100,
-                            Name = "Earth",
-                            Type = "Planet",
-                            Dimension = "Dimension C-137",
-                            Url = "http://example.com/location/100",
-                            Created = new DateTime(2020, 12, 2)
-                        },
-                Location = new Location
-                        {
-                            Id = 101,
-                            Name = "Citadel of Ricks",
-                            Type = "Space station",
-                            Dimension = "Unknown",
-                            Url = "http://example.com/location/101",
-                            Created = new DateTime(2020, 12, 2)
-                        },
-                Image = "http://example.com/summer.png",
-                Url = "http://example.com/character/3",
-                Created = created
-            },
-            new()
-            {
-                Id = 4,
-                Name = "Summer Smith",
-                Status = "Alive",
-                Type = "Clone",
-                Gender = "Female",
-                               Origin = new Location
-                        {
-                            Id = 102,
-                            Name = "Earth",
-                            Type = "Planet",
-                            Dimension = "Dimension C-137",
-                            Url = "http://example.com/locations/102",
-                            Created = new DateTime(2020, 12, 2)
-                        },
-                Location = new Location
-                        {
-                            Id = 103,
-                            Name = "Citadel of Ricks",
-                            Type = "Space station",
-                            Dimension = "Unknown",
-                            Url = "http://example.com/locations/103",
-                            Created = new DateTime(2020, 12, 2)
-                        },
-                Image = "http://example.com/summer2.png",
-                Url = "http://example.com/character/2",
-                Created = created
-            }
+            Id = 1,
+            Name = "Earth (C-137)",
+            Type = "Planet",
+            Dimension = "Dimension C-137",
+            Url = "https://rickandmortyapi.com/api/location/1",
+            Created = created
         };
+
+        var locationEarthReplacement = new Location
+        {
+            Id = 20,
+            Name = "Earth (Replacement Dimension)",
+            Type = "Planet",
+            Dimension = "Replacement Dimension",
+            Url = "https://rickandmortyapi.com/api/location/20",
+            Created = created
+        };
+
+        var locationCitadel = new Location
+        {
+            Id = 3,
+            Name = "Citadel of Ricks",
+            Type = "Space station",
+            Dimension = "Unknown",
+            Url = "https://rickandmortyapi.com/api/location/3",
+            Created = created
+        };
+
+        var locationFroopyland = new Location
+        {
+            Id = 10,
+            Name = "Froopyland",
+            Type = "Artificial Dimension",
+            Dimension = "Froopy Dimension",
+            Url = "https://rickandmortyapi.com/api/location/10",
+            Created = created
+        };
+
+        var locationBirdWorld = new Location
+        {
+            Id = 15,
+            Name = "Bird World",
+            Type = "Planet",
+            Dimension = "Bird Dimension",
+            Url = "https://rickandmortyapi.com/api/location/15",
+            Created = created
+        };
+
+        // Characters using shared locations
+        var characters = new List<Character>
+{
+    new()
+    {
+        Id = 1,
+        Name = "Rick Sanchez",
+        Status = "Alive",
+        Gender = "Male",
+        Type = "Human",
+        Image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+        Url = "https://rickandmortyapi.com/api/character/1",
+        Origin = locationEarthC137,
+        Location = locationCitadel,
+        Created = created
+    },
+    new()
+    {
+        Id = 2,
+        Name = "Morty Smith",
+        Status = "Alive",
+        Gender = "Male",
+        Type = "Human",
+        Image = "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+        Url = "https://rickandmortyapi.com/api/character/2",
+        Origin = locationEarthC137,
+        Location = locationEarthReplacement,
+        Created = created
+    },
+    new()
+    {
+        Id = 3,
+        Name = "Summer Smith",
+        Status = "Alive",
+        Gender = "Female",
+        Type = "Human",
+        Image = "https://rickandmortyapi.com/api/character/avatar/3.jpeg",
+        Url = "https://rickandmortyapi.com/api/character/3",
+        Origin = locationEarthC137,
+        Location = locationCitadel,
+        Created = created
+    },
+    new()
+    {
+        Id = 4,
+        Name = "Beth Smith",
+        Status = "Alive",
+        Gender = "Female",
+        Type = "Human",
+        Image = "https://rickandmortyapi.com/api/character/avatar/4.jpeg",
+        Url = "https://rickandmortyapi.com/api/character/4",
+        Origin = locationFroopyland,
+        Location = locationEarthReplacement,
+        Created = created
+    },
+    new()
+    {
+        Id = 5,
+        Name = "Birdperson",
+        Status = "Dead",
+        Gender = "Male",
+        Type = "Alien",
+        Image = "https://rickandmortyapi.com/api/character/avatar/47.jpeg",
+        Url = "https://rickandmortyapi.com/api/character/47",
+        Origin = locationBirdWorld,
+        Location = locationEarthReplacement,
+        Created = created
+    }
+};
+
 
         var factory = GetFactoryWithSeedData(characters);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
-        var result = await service.GetAsync("Summer Smith");
+        var filters = new List<(CharacterFilter Filter, Func<CharacterDto, bool> Predicate)>
+    {
+        (new CharacterFilter { Name = "Rick Sanchez" }, c => c.Name == "Rick Sanchez"),
+        (new CharacterFilter { Status = "Alive", Gender = "Female" }, c => c.Status == "Alive" && c.Gender == "Female"),
+        (new CharacterFilter { Planet = "Citadel of Ricks" }, c => c.Location?.Name == "Citadel of Ricks"),
+        (new CharacterFilter { Gender = "Male", Planet = "Earth" }, c => c.Gender == "Male" && c.Location?.Name == "Earth"),
+        (new CharacterFilter { Status = "Dead" }, c => c.Status == "Dead"),
+    };
 
-        result.Should().HaveCount(2);
-        result.All(c => c.Name == "Summer Smith").Should().BeTrue();
-        result.All(c => c.Created == created).Should().BeTrue();
+        foreach (var (filter, predicate) in filters)
+        {
+            var result = await service.GetAsync(filter);
+            result.Should().NotBeNull();
+            result.All(predicate).Should().BeTrue($"Filter: {filter.ToQueryString()}");
+        }
     }
 
     [Fact]
     public async Task AddAsync_ShouldAddCharacter_WithAllProperties()
     {
         var created = new DateTime(2020, 12, 2);
-        var dto = new NewCharacterDto
+        var dto = new NewApiCharacterDto
         {
             Id = 5,
             Name = "Birdperson",
@@ -248,13 +323,13 @@ public class CharacterServiceTests
 
         var factory = GetFactoryWithSeedData([]);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         await service.AddAsync(dto);
-        var result = await service.GetAsync();
+        var character = await service.GetAsync(5);
 
-        result.Should().ContainSingle();
-        var character = result[0];
+        character.Should().NotBeNull();
         character.Id.Should().Be(5);
         character.Name.Should().Be("Birdperson");
         character.Status.Should().Be("Alive");
@@ -304,7 +379,8 @@ public class CharacterServiceTests
 
         var factory = GetFactoryWithSeedData(characters);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         await service.DeleteAsync(6);
         var result = await service.GetAsync();
@@ -381,7 +457,8 @@ public class CharacterServiceTests
 
         var factory = GetFactoryWithSeedData(characters);
         var apiMock = new Mock<IRickAndMortyApiService>();
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         var count = await service.CountAsync();
 
@@ -389,47 +466,62 @@ public class CharacterServiceTests
     }
 
     [Fact]
-    public async Task GetAllFromApiAsync_ShouldFetchFromApi_AndSaveAllProperties()
+    public async Task GetAllFromApiAsync_ShouldFetch10Characters_AndSaveCorrectValues()
     {
+        // Geneated by AI, I undertand it but I'd have not made it this clever because it feels like it needs a test of the test, but left it here as an example of what's possible
         var created = new DateTime(2020, 12, 2);
-        var fakeDtos = new List<NewCharacterDto>
+        var fakeDtos = Enumerable.Range(1, 10).Select(i => new NewApiCharacterDto
         {
-            new()
-            {
-                Id = 9,
-                Name = "Unity",
-                Status = "Alive",
-                Type = "Hive-mind",
-                Gender = "Genderless",
-                Origin = new() { Name = "System A113", Url = "http://example.com/location/113" },
-                Location = new() { Name = "Earth", Url = "http://example.com/location/1" },
-                Image = "http://example.com/unity.png",
-                Url = "http://example.com/character/9",
-                Created = created,
-                Episode = ["http://example.com/episode/3"]
-            }
-        };
+            Id = i,
+            Name = $"Character {i}",
+            Status = i % 2 == 0 ? "Alive" : "Dead",
+            Type = i % 3 == 0 ? "Alien" : "Human",
+            Gender = i % 2 == 0 ? "Male" : "Female",
+            Origin = new() { Name = $"Origin {i}", Url = $"http://example.com/location/{100 + i}" },
+            Location = new() { Name = $"Location {i}", Url = $"http://example.com/location/{i}" },
+            Image = $"http://example.com/image/{i}.png",
+            Url = $"http://example.com/character/{i}",
+            Created = created,
+            Episode = [$"http://example.com/episode/{i}"]
+        }).ToList();
 
         var apiMock = new Mock<IRickAndMortyApiService>();
-        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewCharacterDto>("api/character/?status=alive"))
+        apiMock.Setup(api => api.FetchAllEpisodesAsync<NewApiCharacterDto>("api/character/?status=alive"))
                .ReturnsAsync(fakeDtos);
 
         var factory = GetFactoryWithSeedData([]);
-        var service = new CharacterService(factory, apiMock.Object, _mapper);
+        var mockCacheInvalidator = new Mock<ICacheInvalidator>();
+        var service = new CharacterService(factory, apiMock.Object, _mapper, mockCacheInvalidator.Object);
 
         var count = await service.GetAllFromApiAsync();
 
-        count.Should().Be(1);
+        count.Should().Be(10);
+
         var result = await service.GetAsync();
-        result.Should().ContainSingle();
-        var character = result[0];
-        character.Id.Should().Be(9);
-        character.Name.Should().Be("Unity");
-        character.Status.Should().Be("Alive");
-        character.Type.Should().Be("Hive-mind");
-        character.Gender.Should().Be("Genderless");
-        character.Image.Should().Be("http://example.com/unity.png");
-        character.Url.Should().Be("http://example.com/character/9");
-        character.Created.Should().Be(created);
+        result.Should().HaveCount(10);
+
+        // Validate character with ID = 1
+        var char1 = result.FirstOrDefault(c => c.Id == 1);
+        char1.Should().NotBeNull();
+        char1!.Name.Should().Be("Character 1");
+        char1.Status.Should().Be("Dead");
+        char1.Type.Should().Be("Human");
+        char1.Gender.Should().Be("Female");
+        char1.Image.Should().Be("http://example.com/image/1.png");
+        char1.Url.Should().Be("http://example.com/character/1");
+        char1.Created.Should().Be(created);
+
+        // Validate character with ID = 5
+        var char5 = result.FirstOrDefault(c => c.Id == 5);
+        char5.Should().NotBeNull();
+        char5!.Name.Should().Be("Character 5");
+        char5.Status.Should().Be("Dead");
+        char5.Type.Should().Be("Human");
+        char5.Gender.Should().Be("Female");
+        char5.Image.Should().Be("http://example.com/image/5.png");
+        char5.Url.Should().Be("http://example.com/character/5");
+        char5.Created.Should().Be(created);
     }
+
+
 }

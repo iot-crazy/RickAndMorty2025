@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickAndMorty.Services", "Ri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickAndMorty.Contracts", "RickAndMorty.Contracts\RickAndMorty.Contracts.csproj", "{C04BB600-3214-4CA2-9D2A-F06F5F8B80C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickAndMorty.Synchroniser", "RickAndMorty.Synchroniser\RickAndMorty.Synchroniser.csproj", "{C524877E-A573-4381-AB29-75B10EBDDC21}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickAndMorty.UnitTests", "RickAndMorty.UnitTests\RickAndMorty.UnitTests.csproj", "{49B11C69-D19C-4DA1-BD8B-A4223A8D380E}"
 EndProject
 Global
@@ -49,10 +47,6 @@ Global
 		{C04BB600-3214-4CA2-9D2A-F06F5F8B80C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C04BB600-3214-4CA2-9D2A-F06F5F8B80C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C04BB600-3214-4CA2-9D2A-F06F5F8B80C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C524877E-A573-4381-AB29-75B10EBDDC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C524877E-A573-4381-AB29-75B10EBDDC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C524877E-A573-4381-AB29-75B10EBDDC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C524877E-A573-4381-AB29-75B10EBDDC21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49B11C69-D19C-4DA1-BD8B-A4223A8D380E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49B11C69-D19C-4DA1-BD8B-A4223A8D380E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49B11C69-D19C-4DA1-BD8B-A4223A8D380E}.Release|Any CPU.ActiveCfg = Release|Any CPU

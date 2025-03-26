@@ -5,11 +5,11 @@ using System.Globalization;
 
 namespace RickAndMorty.Services;
 
-public class EpisodeProfile : Profile
+public sealed class EpisodeProfile : Profile
 {
     public EpisodeProfile()
     {
-        CreateMap<NewEpisodeDto, Episode>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+        CreateMap<NewApiEpisodeDto, Episode>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
         .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
         .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
         .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
