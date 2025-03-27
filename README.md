@@ -4,6 +4,9 @@ Rick And Morty Interview Task 2025
 *THIS CODE IS OWNED BY THE AUTHOR AND MUST NOT BE DISTRIBUTED*
 THIS REPOSITORY IS KEPT PRIVATE TO HELP AVOID PLAGARISM
 
+![image](./docs/images/homescreen.png)
+
+
 # Setup and execution
 
 Ths section aims to guide the reader through the process to run this code sample
@@ -25,6 +28,16 @@ dotnet restore
 dotnet run --project ./RickAndMorty.Web/
 ```
 
+Finally, open you browser and got to  http://localhost:5168/
+
+:information_source: Hint - if you want to test the caching without waiting 5 minutes, open the appsettings.json in the Web project and change the value of CacheMinutes
+
+:information_source: Do you want to strip the database and start again. This app uses the build in 'localdb'.
+You can connect to this from SQL Server Managerment Studio usually as "(localdb)/MSSQLLocalDB" using your local authentication (windows authentication if on windows)
+If Visual Studio Code is more your style, then using the SQL Server plugin https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql
+The database name is RickAndMorty. You may need to check the "Trust server certificate" box. 
+
+![image](./docs/images/vscsqlconnect.png)
 
 # Features
 
