@@ -16,9 +16,9 @@ public class NewCharacterDto
     [Required]
     public string Gender { get; set; } = string.Empty;
 
-    public int OriginLocationId { get; set; } = default!;
+    public int OriginLocationId { get; set; } = 0;
 
-    public int LocationId { get; set; } = default!;
+    public int LocationId { get; set; } = 0;
 
     public string Image { get; set; } = string.Empty;
 

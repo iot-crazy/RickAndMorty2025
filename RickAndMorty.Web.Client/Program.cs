@@ -6,10 +6,9 @@ using RickAndMorty.Services;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddMudServices();
-builder.Services.AddScoped<ICharacterDataProvider, ApiCharacterDataProvider>();
+builder.Services.AddScoped<IApiCharacterDataProvider, ApiCharacterDataProvider>();
 builder.Services.AddScoped<ILocationDataProvider, ApiLocationDataProvider>();
 builder.Services.AddScoped<IEpisodeDataProvider, ApiEpisodeDataProvider>();
-builder.Services.AddScoped<IImportService, ImportService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 
 builder.Services.AddScoped(sp => new HttpClient

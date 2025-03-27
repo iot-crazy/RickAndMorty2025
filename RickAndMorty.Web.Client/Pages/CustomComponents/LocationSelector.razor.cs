@@ -20,7 +20,6 @@ public class LocationSelectorBase : ComponentBase
     [Parameter]
     public string Label { get; set; } = string.Empty;
 
-
     [Parameter]
     public LocationDto SelectedLocation
     {
@@ -28,28 +27,25 @@ public class LocationSelectorBase : ComponentBase
 
         set
         {
-            if (_selectedLocation != value) return;
+            if (_selectedLocation == value) return;
             _selectedLocation = value;
             SelectedLocationChanged.InvokeAsync(value);
         }
     }
 
-    protected void OnSelectedItemChanged(LocationDto location)
-    {
-        SelectedLocation = location;
-    }
-
     protected IEnumerable<LocationDto> Locations = [];
-
 
     protected async Task OnSelectedLocationChanged(LocationDto location)
     {
+        SelectedLocation = location;
         await SelectedLocationChanged.InvokeAsync(location);
     }
 
     protected override async Task OnInitializedAsync()
     {
         await GetLocations();
+        SelectedLocation = Locations.First(x => x.Id == 0);
+        StateHasChanged();
     }
 
     private async Task GetLocations()

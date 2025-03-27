@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 
 namespace RickAndMorty.Services;
 
-public sealed class ApiCharacterDataProvider(HttpClient http) : ICharacterDataProvider
+public sealed class ApiCharacterDataProvider(HttpClient http) : IApiCharacterDataProvider
 {
     public async Task<IReadOnlyList<CharacterDto>> GetAsync(CharacterFilter? filter = null)
         => await http.GetFromJsonAsync<List<CharacterDto>>($"api/character{filter?.ToQueryString()}") ?? [];

@@ -76,7 +76,7 @@
                 <MudTextField @bind-Value="NewCharacter.Gender" For="@(() => NewCharacter.Gender)" Label="Gender" Variant="Variant.Text" />
                 <MudTextField @bind-Value="NewCharacter.Image" For="@(() => NewCharacter.Image)" Label="Image" Variant="Variant.Text" />
                 <MudTextField @bind-Value="NewCharacter.Url" For="@(() => NewCharacter.Url)" Label="Url" Variant="Variant.Text" />
-                <LocationSelector SelectedLocationChanged="OnSelectedLocationChanged" Label="Last known Location" />
+                <LocationSelector SelectedLocationChanged="OnSelectedLocationChanged" Label="Last known location" />
                 <LocationSelector SelectedLocationChanged="OnSelectedOriginChanged" Label="Origin" />
                 <EpisodesSelector SelectedEpisodesChanged="OnEpisodesChanged" Label="Episodes" />
             </MudForm>

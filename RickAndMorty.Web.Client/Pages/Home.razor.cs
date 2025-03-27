@@ -7,7 +7,7 @@ namespace RickAndMorty.Web.Client.Pages;
 public class HomeBase : ComponentBase
 {
     [Inject]
-    private ICharacterDataProvider CharacterProvider { get; set; } = default!;
+    private IApiCharacterDataProvider CharacterProvider { get; set; } = default!;
 
     [Inject]
     private IImportService ImportService { get; set; } = default!;

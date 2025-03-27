@@ -74,6 +74,9 @@ Controllers - 0% - these would require integration testing - but if you know a w
 
 # Limitations & Future Improvements
 
+## Server mode only
+At the time of writing, the Blazor app is only available in "server rendering mode". This is due to the access required for the data importer which I prefer not to expose via the API. Instead, I am investigating other more secure options.
+
 ## Clashing character IDs & loss of data
 Because we add characters directly in our own database, it is possible that later additional records from the API could clash if they use the same ID.
 However, the synchronise process here cleans the database before getting data, which will result in manuallay aded records being lost.

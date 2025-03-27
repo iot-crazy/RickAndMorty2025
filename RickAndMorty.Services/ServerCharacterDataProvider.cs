@@ -3,7 +3,7 @@ using RickAndMorty.DTO.Character;
 
 namespace RickAndMorty.Services;
 
-public sealed class ServerCharacterDataProvider : ICharacterDataProvider
+public sealed class ServerCharacterDataProvider : IApiCharacterDataProvider
 {
     private readonly ICharacterService _service;
 

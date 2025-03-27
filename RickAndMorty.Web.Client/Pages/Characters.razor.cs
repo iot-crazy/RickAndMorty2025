@@ -11,7 +11,7 @@ public class CharactersBase : ComponentBase
 {
 
     [Inject]
-    private ICharacterDataProvider CharacterProvider { get; set; } = default!;
+    private IApiCharacterDataProvider CharacterProvider { get; set; } = default!;
 
     [Inject]
     private ISnackbar Snackbar { get; set; }

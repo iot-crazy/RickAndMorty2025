@@ -67,7 +67,19 @@ public sealed class LocationService(IRickAndMortyContextFactory contextFactory,
     {
         var context = await contextFactory.CreateContextAsync();
         var locations = await apiService.FetchAllEpisodesAsync<NewApiLocationDto>("api/location/");
-        var newLocations = mapper.Map<IEnumerable<Location>>(locations);
+        var newLocations = mapper.Map<List<Location>>(locations);
+
+        // Add a default unknown location to help our seelct lists later
+        newLocations.Add(new Location()
+        {
+            Id = 0,
+            Name = "Unknown",
+            Dimension = "Unknown",
+            Created = DateTime.UtcNow,
+            Type = "Unknown",
+            Url = string.Empty,
+        });
+
         context.Locations.AddRange(newLocations);
         await context.SaveChangesAsync();
         return await CountAsync();
