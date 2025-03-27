@@ -30,6 +30,10 @@ dotnet run --project ./RickAndMorty.Web/
 
 Finally, open you browser and got to  http://localhost:5168/
 
+If your browser supports WebAssembly (WASM) then you will receive the WASm version which will pull data from the API and therefore will use the cache for repeat requests.
+If not, you'll be working with Server rendered blazor app which, as yet doesn't cache. The reason here is that I've not (yet) got them to play nicely together and share the same cache. This part is a work in progress.
+Some users will notice a blip, a flash of the page when the WASM gets loaded, this is a quirk with the InterractiveAuto render mode that still needs figuring out. 
+
 
 :information_source: Hint - if you want to test the caching without waiting 5 minutes, open the appsettings.json in the Web project and change the value of CacheMinutes
 

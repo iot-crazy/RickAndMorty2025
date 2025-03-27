@@ -59,6 +59,7 @@ public sealed class CharacterService(IRickAndMortyContextFactory contextFactory,
         var entity = mapper.Map<Character>(dto);
         context.Characters.Add(entity);
         await context.SaveChangesAsync();
+        await InvalidateCache();
     }
 
     public async Task<CharacterDto?> AddAsync(NewCharacterDto dto)
@@ -74,7 +75,7 @@ public sealed class CharacterService(IRickAndMortyContextFactory contextFactory,
         }
 
         await context.SaveChangesAsync();
-        await cacheInvalidator.Invalidate("Characters");
+        await InvalidateCache();
         return await GetAsync(entity.Id);
     }
 
@@ -85,6 +86,7 @@ public sealed class CharacterService(IRickAndMortyContextFactory contextFactory,
         if (entity is null) return;
         context.Characters.Remove(entity);
         await context.SaveChangesAsync();
+        await InvalidateCache();
     }
 
     public async Task<int> CountAsync()
@@ -100,6 +102,14 @@ public sealed class CharacterService(IRickAndMortyContextFactory contextFactory,
         var newCharacters = mapper.Map<IEnumerable<Character>>(characters);
         context.Characters.AddRange(newCharacters);
         await context.SaveChangesAsync();
+        await InvalidateCache();
         return await CountAsync();
     }
+
+    private async Task InvalidateCache()
+    {
+        await cacheInvalidator.Invalidate("CharactersById");
+        await cacheInvalidator.Invalidate("CharactersFilter");
+    }
+
 }

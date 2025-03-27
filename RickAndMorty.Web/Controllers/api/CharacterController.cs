@@ -10,20 +10,12 @@ namespace RickAndMorty.Web.Controllers.api;
 
 public class CharacterController(ICharacterService characterService) : Controller
 {
-    //[OutputCache(Tags = ["Characters"])]
-    //[OutputCacheWithHeader]
-    //[HttpGet]
-    //public async Task<IActionResult> Get()
-    //{
-    //    return Ok(await characterService.GetAsync());
-    //}
-
-    [OutputCache(Tags = ["Characters"], VaryByRouteValueNames = ["id"])]
+    [OutputCache(Tags = ["CharactersById"], VaryByRouteValueNames = ["id"])]
     [OutputCacheWithHeader]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id) => Ok(await characterService.GetAsync(id));
 
-    [OutputCache(Tags = ["Characters"], VaryByQueryKeys = ["name", "planet", "status", "gender"])]
+    [OutputCache(Tags = ["CharactersFilter"], VaryByQueryKeys = ["name", "planet", "status", "gender"])]
     [OutputCacheWithHeader]
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] CharacterFilter? filter = null) => Ok(await characterService.GetAsync(filter));

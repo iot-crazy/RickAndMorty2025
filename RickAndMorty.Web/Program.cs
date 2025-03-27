@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMudServices();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 // Add essential services to the container.
 builder.Services.AddRazorComponents()
@@ -33,6 +34,9 @@ builder.Services.Scan(scan => scan
         .AsImplementedInterfaces()
         .WithScopedLifetime()
 );
+
+
+builder.Services.AddScoped<IImportService, ImportService>();
 
 // ** Register the database context and factory ** //
 builder.Services.AddScoped<IRickAndMortyContextFactory, RickAndMortyContextFactory>()
@@ -75,6 +79,9 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
+
 var app = builder.Build();
 
 // ** Ensure the database is created and the schema is migrated ** //
@@ -93,6 +100,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// ** Our SignalR hub for the import servers ** //
+app.MapHub<ImportHub>("/importhub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
