@@ -30,7 +30,7 @@ dotnet run --project ./RickAndMorty.Web/
 
 Finally, open you browser and got to  http://localhost:5168/
 
-:information_source: The blazor render mode is set to InteractiveAuto which means 
+:information_source: The blazor render mode is set to 'InteractiveAuto' which means if your browser supports web assembly then you will run in webassembly node, if not you'll get HTML mode.
 
 :information_source: Hint - if you want to test the caching without waiting 5 minutes, open the appsettings.json in the Web project and change the value of CacheMinutes
 
