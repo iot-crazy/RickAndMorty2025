@@ -7,8 +7,11 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">Rick & Morty Demo - Tony Kenny</MudText>
         <MudSpacer />
+        <div class="slide-in-bounce" @key="animationKey">
+        <MudText>Change the colour theme here</MudText><MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Class="bouncing-arrow" />
+        </div>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
@@ -31,6 +34,8 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+
+    private string animationKey = Guid.NewGuid().ToString();
 
     protected override void OnInitialized()
     {

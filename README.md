@@ -55,12 +55,16 @@ Controllers - 0% - these would require integration testing - but if you know a w
 - Fine code coverage - shows unit est code coverage for those of us who can't afford VS Enterprise edition!
 
 
-# Limitations
+# Limitations & Future Improvements
 
 ## Clashing character IDs & loss of data
 Because we add characters directly in our own database, it is possible that later additional records from the API could clash if they use the same ID.
 However, the synchronise process here cleans the database before getting data, which will result in manuallay aded records being lost.
 For the purpose of this exercise I have set the ID as the max ID + 1, this is not ideal for many reasons, we can discuss in interview.
+
+## Improved form validation
+- Validate URL and Image fields to check they are valid
+- Possibly implement image upload
 
 ## Database fields need refinement
 Not knowing the max sizes of all the fields, for the purpose of this piece I left them all at maximum.
@@ -95,3 +99,4 @@ This is some of the way it has helped me. It doesn't always produce ideal code a
 - Generating test data - this can be a labourious task, instead, I just give ChatGpt the RickAndMorty Api and ask it to generate realistic test data
 - Discovering techniques - asking it for a better way to do things, sometimes it comes up with some better method or a new package/feature I didn't know about
 - General bouncing of ideas - give it a problem and some options I'm considering to ask for opinions, i don't always follow it's advice, but it's good to 'talk' through a problem with somebody 
+- Animateed CSS - I'm a backend specialist, but ChatGTP is 'fullstack' 

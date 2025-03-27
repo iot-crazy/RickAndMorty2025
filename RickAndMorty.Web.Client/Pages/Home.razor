@@ -12,7 +12,7 @@
             <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Color="Color.Info" Class="me-2" />
 
             <MudText Typo="Typo.subtitle2" Color="Color.Info">
-                Import in progress — data is being fetched from the Rick and Morty API. Please wait...
+                Import in progress — @CurrentStatus
             </MudText>
         </MudPaper>
     }
@@ -34,79 +34,98 @@
                 </MudButton>
             </div>
         </MudPaper>
-
-
     }
 }
 else
 {
-<MudPaper Class="pa-2 d-flex align-center justify-start" Elevation="1" Style="background-color: #d4edda;">
-    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="me-2" />
-
-    <MudText Typo="Typo.subtitle2" Color="Color.Success">
-        Import complete — all data has been successfully loaded from the Rick and Morty API.
-    </MudText>
+    <MudPaper Class="pa-3 d-flex align-center justify-between flex-wrap" Elevation="1" Style="background-color: #d4edda;">
+    <MudGrid>
+    <MudItem xs="6">
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="me-2" />
+            <MudText Typo="Typo.subtitle2" Color="Color.Success">
+                Import complete — all data has been successfully loaded from the Rick and Morty API.
+            </MudText>
+        </div>
+    </MudItem>
+    <MudItem xs="3">
+        <MudLink Href="/characters" Class="me-4">Go to the characters page</MudLink>
+     </MudItem>
+     <MudItem xs="3">
+        <MudLink Href="/swagger">View the Swagger page</MudLink>
+     </MudItem>
+     </MudGrid>
 </MudPaper>
+
 }
 
+<MudGrid Class="d-flex align-center" Style="min-height: 600px;">
 
-<MudPaper Class="pa-6 ma-6 d-flex flex-column align-center justify-center" Elevation="2">
-    <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
-    
-    <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
-        Welcome to the Rick and Morty Code Challenge & Tech Demo
-    </MudText>
+    <MudItem xs="4">
+        <MudPaper Class="pa-4 ma-6 d-flex align-center justify-center" Elevation="2">
+                <MudImage src="assets/img/rickandmortycoding.webp" Style="width:100%; object-fit:cover;" />
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="8">
 
-    <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-4">
-        This project showcases modern .NET technologies using live data from the Rick and Morty universe.
-        <br/>
-        Explore Blazor, EF Core, MudBlazor, and more — all in one interdimensional app!
-    </MudText>
+        <MudPaper Class="pa-6 ma-6 d-flex flex-column align-center justify-center" Elevation="2">
+            <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
 
-<MudGrid Justify="Justify.Center" AlignItems="Center">
-                        <MudItem xs="1"></MudItem>
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+                Welcome to the Rick and Morty Code Challenge & Tech Demo
+            </MudText>
 
-                        <MudItem xs="2">
-                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
-                                <MudCardContent Style="text-align: center;">
-                                    <MudImage Src="assets/img/NET_Core_Logo.svg.png"  Height="75" />
-                                    <MudText>.Net Core 9</MudText>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-4">
+                This project showcases modern .NET technologies using live data from the Rick and Morty universe.
+                <br />
+                Explore Blazor, EF Core, MudBlazor, and more — all in one interdimensional app!
+            </MudText>
 
-                         <MudItem xs="2">
-                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
-                                <MudCardContent Style="text-align: center;">
-                                    <MudImage Src="assets/img/mudblazorlogo.png" Height="75" />
-                                    <MudText>MudBlazor</MudText>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
+            <MudGrid Justify="Justify.Center" AlignItems="Center" GutterSize="GutterSize.Medium">
+                <MudItem xs="1"></MudItem>
 
-                            <MudItem xs="2">
-                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
-                                <MudCardContent Style="text-align: center;">
-                                    <MudImage Src="assets/img/efcore.png" Height="75" />
-                                    <MudText>Entity Framework 9</MudText>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
+                <MudItem xs="2">
+                    <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                        <MudCardContent Style="text-align: center;">
+                            <MudImage Src="assets/img/NET_Core_Logo.svg.png" Height="75" />
+                            <MudText>.Net Core 9</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
 
-                        <MudItem xs="2">
-                            <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
-                                <MudCardContent Style="text-align: center;">
-                                    <MudImage Src="assets/img/onion.png" Height="75" />
-                                    <MudText>Onion Architecture</MudText>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
+                <MudItem xs="2">
+                    <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                        <MudCardContent Style="text-align: center;">
+                            <MudImage Src="assets/img/mudblazorlogo.png" Height="75" />
+                            <MudText>MudBlazor</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
 
-                        <MudItem xs="1"></MudItem>
-                    </MudGrid>
+                <MudItem xs="2">
+                    <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                        <MudCardContent Style="text-align: center;">
+                            <MudImage Src="assets/img/efcore.png" Height="75" />
+                            <MudText>Entity Framework 9</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
 
-    <MudText Typo="Typo.caption" Align="Align.Center">
-        See the README.md in the solution root folder.
-    </MudText>
-</MudPaper>
+                <MudItem xs="2">
+                    <MudCard Style="height: 200px; background: transparent; box-shadow: none; color:white;">
+                        <MudCardContent Style="text-align: center;">
+                            <MudImage Src="assets/img/onion.png" Height="75" />
+                            <MudText>Onion Architecture</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
 
+                <MudItem xs="1"></MudItem>
+            </MudGrid>
+
+            <MudText Typo="Typo.h5" Align="Align.Center">
+                See the README in the solution root folder.
+            </MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

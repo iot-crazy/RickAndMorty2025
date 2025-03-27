@@ -14,12 +14,19 @@ public class HomeBase : ComponentBase
 
     protected List<CharacterDto> AllCharacters = [];
     protected bool ImportInProgress = false;
-
+    protected string CurrentStatus = "Starting...";
 
     protected override async Task OnInitializedAsync()
     {
+        ImportService.ProgressChanged += OnProgressChanged;
         await GetAllCharacters();
         StateHasChanged();
+    }
+
+    private void OnProgressChanged(string message)
+    {
+        CurrentStatus = message;
+        InvokeAsync(StateHasChanged);
     }
 
     protected async Task ImportData()
@@ -35,5 +42,10 @@ public class HomeBase : ComponentBase
     private async Task GetAllCharacters()
     {
         AllCharacters = (await CharacterProvider.GetAsync()).ToList();
+    }
+
+    public void Dispose()
+    {
+        ImportService.ProgressChanged -= OnProgressChanged;
     }
 }

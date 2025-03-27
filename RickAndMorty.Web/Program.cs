@@ -13,11 +13,12 @@ builder.Services.AddMudServices();
 
 builder.Services.AddControllers();
 
-// Add services to the container.
+// Add essential services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// ** Scan for services to inject so we don't need to add them all by hand! ** //
 builder.Services.Scan(scan => scan
         .FromApplicationDependencies(assembly => assembly.FullName!.StartsWith("RickAndMorty.Services"))
         .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service") && !type.IsAbstract))
@@ -25,13 +26,13 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 
+// ** Scan for all providers also - they live in the same namespace **  //
 builder.Services.Scan(scan => scan
         .FromApplicationDependencies(assembly => assembly.FullName!.StartsWith("RickAndMorty.Services"))
         .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Provider") && !type.IsAbstract))
         .AsImplementedInterfaces()
         .WithScopedLifetime()
 );
-
 
 // ** Register the database context and factory ** //
 builder.Services.AddScoped<IRickAndMortyContextFactory, RickAndMortyContextFactory>()
@@ -44,21 +45,24 @@ builder.Services.AddDbContextFactory<RickAndMortyContext>((provider, options) =>
 
 });
 
+
+// ** Automapper ** //
 builder.Services.AddAutoMapper(typeof(CharacterProfile).Assembly);
 
-// To access our own API from WASM
-builder.Services.AddHttpClient<IRickAndMortyApiService, RickAndMortyApiService>((provider, client) =>
-{
-    var config = provider.GetRequiredService<IConfiguration>();
-    client.BaseAddress = new Uri(config.GetValue<string>("ApiBaseAddress") ?? "");
-});
-
+// ** Setup OutputCache **//
 int cacheMinutes = builder.Configuration.GetValue<int>("CacheMinutes");
 builder.Services.AddOutputCache(options =>
 {
     options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(cacheMinutes)));
 });
 
+
+//  ** To access our own API from WASM ** //
+builder.Services.AddHttpClient<IRickAndMortyApiService, RickAndMortyApiService>((provider, client) =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(config.GetValue<string>("ApiBaseAddress") ?? "");
+});
 
 builder.Services.AddHttpClient("ServerAPI", client =>
 {
@@ -67,8 +71,7 @@ builder.Services.AddHttpClient("ServerAPI", client =>
 builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerAPI"));
 
-
-// ** Add swagger **
+// ** Add swagger ** //
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -105,13 +108,10 @@ else
     app.UseHsts();
 }
 
-
 app.UseHttpsRedirection();
 app.MapControllers();
 app.UseOutputCache();
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

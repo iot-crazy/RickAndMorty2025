@@ -18,18 +18,34 @@ public sealed class ImportService(ILogger<ImportService> logger,
 
         logger.LogInformation("Starting character retrieval...");
 
+        Report("Starting import...");
+
+
+        Report("Step 1 of 4 - Clearing database");
         logger.LogInformation("Clearing database.");
         await databaseCleanerService.CleanAsync();
 
+        Report("Step 2 of 4 - Getting locations");
         logger.LogInformation("Getting locations");
         await locationService.GetAllFromApiAsync();
 
+        Report("Step 3 of 4 - Getting episodes");
         logger.LogInformation("Getting episodes");
         await episodeService.GetAllFromApiAsync();
 
+        Report("Final step - Getting characters");
         logger.LogInformation("Getting characters");
         await characterService.GetAllFromApiAsync();
 
+        Report("All done - checking status... ");
+    }
+
+    public event Action<string>? ProgressChanged;
+
+    private void Report(string message)
+    {
+        logger.LogInformation(message);
+        ProgressChanged?.Invoke(message);
     }
 
 }

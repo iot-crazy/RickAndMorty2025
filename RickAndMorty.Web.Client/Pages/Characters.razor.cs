@@ -13,6 +13,9 @@ public class CharactersBase : ComponentBase
     [Inject]
     private ICharacterDataProvider CharacterProvider { get; set; } = default!;
 
+    [Inject]
+    private ISnackbar Snackbar { get; set; }
+
     protected List<CharacterDto> AllCharacters = [];
     protected NewCharacterDto NewCharacter = new();
     protected MudDialog AddNewCharacterDialog { get; set; } = default!;
@@ -88,6 +91,7 @@ public class CharactersBase : ComponentBase
             await CharacterProvider.AddAsync(NewCharacter);
             await GetAllCharacters();
             await AddNewCharacterDialog.CloseAsync();
+            Snackbar.Add($"New character added {NewCharacter.Name}");
             await InvokeAsync(StateHasChanged);
         }
     }
