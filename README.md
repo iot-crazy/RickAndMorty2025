@@ -4,7 +4,7 @@ Rick And Morty Interview Task 2025
 *THIS CODE IS OWNED BY THE AUTHOR AND MUST NOT BE DISTRIBUTED*
 THIS REPOSITORY IS KEPT PRIVATE TO HELP AVOID PLAGARISM
 
-![image](./docs/images/homescreen.png)
+![image](docs/images/homescreen.png)
 
 
 # Setup and execution
@@ -37,7 +37,7 @@ You can connect to this from SQL Server Managerment Studio usually as "(localdb)
 If Visual Studio Code is more your style, then using the SQL Server plugin https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql
 The database name is RickAndMorty. You may need to check the "Trust server certificate" box. 
 
-![image](./docs/images/vscsqlconnect.png)
+![image](docs/images/vscsqlconnect.png)
 
 # Features
 
