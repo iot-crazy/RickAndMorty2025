@@ -4,23 +4,26 @@ Rick And Morty Interview Task 2025
 *THIS CODE IS OWNED BY THE AUTHOR AND MUST NOT BE DISTRIBUTED*
 THIS REPOSITORY IS KEPT PRIVATE TO HELP AVOID PLAGARISM
 
-
-
-# TO DO 
-
-Move the synchroniser into a service, execute it from the web projec on demand. on the home page, check if the db is empty, if so, offer a button to start the synch process
-maybe provide feedback to the webpage during the sync?
-
-Finish this doc
-
-
-
-
 # Setup and execution
 
+Ths section aims to guide the reader through the process to run this code sample
 
+## Prerequisites
+A computer with dotnet 9.0.201 or later
 
+## Getting started
 
+The steps to get started are straight forward
+
+1. Clone the repositor to your computer
+2. Either:
+	+ open in your IDE of choice (I use VS),
+	+ from command line follow the script below after changign directory to the solution root (where the .sln file sits)
+	 
+```
+dotnet restore
+dotnet run --project ./RickAndMorty.Web/
+```
 
 
 # Features
