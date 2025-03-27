@@ -7,7 +7,7 @@ namespace RickAndMorty.Services;
 public sealed class ApiCharacterDataProvider(HttpClient http) : ICharacterDataProvider
 {
     public async Task<IReadOnlyList<CharacterDto>> GetAsync(CharacterFilter? filter = null)
-        => await http.GetFromJsonAsync<List<CharacterDto>>("api/character{filter?.ToQueryString()}") ?? [];
+        => await http.GetFromJsonAsync<List<CharacterDto>>($"api/character{filter?.ToQueryString()}") ?? [];
 
     public async Task<CharacterDto?> GetAsync(int id)
         => await http.GetFromJsonAsync<CharacterDto>($"api/character/{id}");

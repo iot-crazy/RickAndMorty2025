@@ -30,6 +30,8 @@ dotnet run --project ./RickAndMorty.Web/
 
 Finally, open you browser and got to  http://localhost:5168/
 
+:information_source: The blazor render mode is set to InteractiveAuto which means 
+
 :information_source: Hint - if you want to test the caching without waiting 5 minutes, open the appsettings.json in the Web project and change the value of CacheMinutes
 
 :information_source: Do you want to strip the database and start again. This app uses the build in 'localdb'.

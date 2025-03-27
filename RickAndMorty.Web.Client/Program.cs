@@ -9,6 +9,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<ICharacterDataProvider, ApiCharacterDataProvider>();
 builder.Services.AddScoped<ILocationDataProvider, ApiLocationDataProvider>();
 builder.Services.AddScoped<IEpisodeDataProvider, ApiEpisodeDataProvider>();
+builder.Services.AddScoped<IImportService, ImportService>();
 
 builder.Services.AddScoped(sp => new HttpClient
 {
