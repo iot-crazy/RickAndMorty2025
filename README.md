@@ -4,6 +4,9 @@ Rick And Morty Interview Task 2025
 *THIS CODE IS OWNED BY THE AUTHOR AND MUST NOT BE DISTRIBUTED*
 THIS REPOSITORY IS KEPT PRIVATE TO HELP AVOID PLAGARISM
 
+
+*UPDATE* The application will now run as WASM if avaiable, else will fal lback to server rendered pages.
+
 ![image](docs/images/homescreen.png)
 
 
@@ -18,10 +21,10 @@ A computer with dotnet 9.0.201 or later
 
 The steps to get started are straight forward
 
-1. Clone the repositor to your computer
+1. Clone the repository to your computer
 2. Either:
 	+ open in your IDE of choice (I use VS),
-	+ from command line follow the script below after changign directory to the solution root (where the .sln file sits)
+	+ from command line follow the script below after changing directory to the solution root (where the .sln file sits)
 	 
 ```
 dotnet restore
@@ -30,7 +33,7 @@ dotnet run --project ./RickAndMorty.Web/
 
 Finally, open you browser and got to  http://localhost:5168/
 
-If your browser supports WebAssembly (WASM) then you will receive the WASm version which will pull data from the API and therefore will use the cache for repeat requests.
+If your browser supports WebAssembly (WASM) then you will receive the WASM version which will pull data from the API and therefore will use the cache for repeat requests.
 If not, you'll be working with Server rendered blazor app which, as yet doesn't cache. The reason here is that I've not (yet) got them to play nicely together and share the same cache. This part is a work in progress.
 Some users will notice a blip, a flash of the page when the WASM gets loaded, this is a quirk with the InterractiveAuto render mode that still needs figuring out. 
 
@@ -56,7 +59,7 @@ This implementation will invalidate the cache when a new character is added.
 
 ## Unit tests
 Unit test coverage is as follows
-Db project - 100%
+DB project - 100%
 Serices - 85% - in production we might want to consider testing the remaining items too
 DTos - 84%, but these are actuall just models so all we'd be testing here is the dotnet framework itself, so this coverage is by side effect of the services test
 Controllers - 0% - these would require integration testing - but if you know a way to do that without having to actually run a server, please tell me (I didn't ask ChatGpt, needed to leave something for us to discuss!)
@@ -78,12 +81,9 @@ Controllers - 0% - these would require integration testing - but if you know a w
 
 # Limitations & Future Improvements
 
-## Server mode only
-At the time of writing, the Blazor app is only available in "server rendering mode". This is due to the access required for the data importer which I prefer not to expose via the API. Instead, I am investigating other more secure options.
-
 ## Clashing character IDs & loss of data
 Because we add characters directly in our own database, it is possible that later additional records from the API could clash if they use the same ID.
-However, the synchronise process here cleans the database before getting data, which will result in manuallay aded records being lost.
+However, the synchronise process here cleans the database before getting data, which will result in manually aded records being lost.
 For the purpose of this exercise I have set the ID as the max ID + 1, this is not ideal for many reasons, we can discuss in interview.
 
 ## Improved form validation
@@ -91,19 +91,19 @@ For the purpose of this exercise I have set the ID as the max ID + 1, this is no
 - Possibly implement image upload
 
 ## Database fields need refinement
-Not knowing the max sizes of all the fields, for the purpose of this piece I left them all at maximum.
-A natural progression from tis would be to determine som max length and then implement them in the EF model and also the DTO validation.
+Not knowing the max sizes of all the fields, for the purpose of this piece I left them all at maximum. But note that using varchar(max) results in certain limitation on SQL server.
+A natural progression from this would be to determine max lengths and then implement them in the EF model and also the DTO validation.
 
 ## Unit tests limited
 These could be expanded to include
 - More data variety
 - More records - possibly loaded from json files to keep the unit tests cleaner and more readable
 - Sad paths (so far we only check the happy paths)
-- Add integration testt for the controllers which are not currently tested
+- Add integration test for the controllers which are not currently tested
 
 ## Caching not combined
 The caching on each of the Character functions is separate, meaning if all characters are retrieved from the database, then one is requested by ID, another database hit takes place
-Caching could 
+A more intelligent caching systems could incorporate both of these.
 
 ## Long running async import process does not have a cancellation token
 
@@ -112,15 +112,15 @@ Caching could
 # Use of AI
 
 With the emergence of generative AI, I would be a fool if I did not use it in my work and therefore I used it in this work too. 
-This is some of the way it has helped me. It doesn't always produce ideal code and sometimes it's just plain wrong, but it's good enough to be saving me time every day!
+This is some of the ways it has helped me. It doesn't always produce ideal code and sometimes it's just plain wrong, but it's good enough to be saving me time every day!
 
 - Generating code from scaffold
 	+ for example, I created a service, I gave that as a template to ChatGPT along with additional models and it created equivalent services
 	+ the same with EF builders, I ave it an exmaple and additional models
-- Reminding me things I forgot, for example asking it to create a scaffold XUnit test
-- Researching - Microsoft Documentation isn't always the easist to read, IF you can actually find the right one! Instead I ask ChatGPT who has 'read' them all so that saves me time.
+- Reminding me things I forgot, for example asking it to create a scaffold xUnit test
+- Researching - Microsoft Documentation isn't always the easist to read, If you can actually find the right one! Instead I ask ChatGPT who has 'read' them all so that saves me time.
 - Debugging - pasting code and compile errors to help spot those hard to find bugs (or when I'm just code-blind from staring at it too much)
 - Generating test data - this can be a labourious task, instead, I just give ChatGpt the RickAndMorty Api and ask it to generate realistic test data
 - Discovering techniques - asking it for a better way to do things, sometimes it comes up with some better method or a new package/feature I didn't know about
 - General bouncing of ideas - give it a problem and some options I'm considering to ask for opinions, i don't always follow it's advice, but it's good to 'talk' through a problem with somebody 
-- Animateed CSS - I'm a backend specialist, but ChatGTP is 'fullstack' 
+- Animated CSS - I'm a backend specialist, but ChatGTP is 'fullstack' 
