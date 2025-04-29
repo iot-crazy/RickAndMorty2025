@@ -2,10 +2,8 @@
 Rick And Morty Interview Task 2025
 
 *THIS CODE IS OWNED BY THE AUTHOR AND MUST NOT BE DISTRIBUTED*
-THIS REPOSITORY IS KEPT PRIVATE TO HELP AVOID PLAGARISM
 
-
-*UPDATE* The application will now run as WASM if avaiable, else will fal lback to server rendered pages.
+*UPDATE* The application will now run as WASM if avaiable, else will fall back to server rendered pages.
 
 ![image](docs/images/homescreen.png)
 
@@ -80,6 +78,9 @@ Controllers - 0% - these would require integration testing - but if you know a w
 
 
 # Limitations & Future Improvements
+
+## Error handling * logging
+For the sake of clarity and brevity, exception handling and logging have not been included. For a production environment, these, of course, would need to be added and each. Typically for a WebAPI I would create a custom attribute at the controller level, allowing exceptions to bubble up and then be caught and logged, providing a user friendly message to the user. Given that true exceptions are situations from which the system cannot recover, such a "last chance" approach is often the best fit.
 
 ## Clashing character IDs & loss of data
 Because we add characters directly in our own database, it is possible that later additional records from the API could clash if they use the same ID.
